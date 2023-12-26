@@ -52,7 +52,7 @@ abstract class BaseViewModel<STATE : State, EVENT : Event, EFFECT : Effect> : Vi
         viewModelScope.launch { _effect.emit(effect) }
     }
 
-    fun getCurrentState() = state.value
+    fun getCurrentState() = _state.value
 
     inline fun <T> Flow<Resource<T>>.handleResult(
         crossinline onComplete: (T) -> Unit,
