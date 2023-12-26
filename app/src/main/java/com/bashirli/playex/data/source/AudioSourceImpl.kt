@@ -1,16 +1,9 @@
 package com.bashirli.playex.data.source
 
-import android.content.ContentResolver
-import android.provider.MediaStore
-import android.provider.MediaStore.Audio.Media
-import androidx.core.database.getLongOrNull
-import androidx.core.database.getStringOrNull
 import com.bashirli.playex.common.Resource
 import com.bashirli.playex.data.dto.AlbumDTO
 import com.bashirli.playex.data.dto.AudioDTO
 import com.bashirli.playex.data.service.AudioService
-import java.io.File
-import javax.inject.Inject
 
 class AudioSourceImpl constructor(
     private val service: AudioService,

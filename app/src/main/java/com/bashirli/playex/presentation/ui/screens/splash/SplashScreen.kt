@@ -1,6 +1,5 @@
 package com.bashirli.playex.presentation.ui.screens.splash
 
-import android.window.SplashScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
