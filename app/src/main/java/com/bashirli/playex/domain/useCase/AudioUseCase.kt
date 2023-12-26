@@ -1,0 +1,13 @@
+package com.bashirli.playex.domain.useCase
+
+import com.bashirli.playex.domain.repository.AudioRepository
+import javax.inject.Inject
+
+class AudioUseCase @Inject constructor(private val repo: AudioRepository) {
+
+    fun getAlbums(limit: Int = 0) = repo.getAlbums(limit)
+
+    fun getAudioFiles(limit: Int = 0) = repo.getAudioFiles(limit)
+
+
+}
