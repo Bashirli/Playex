@@ -2,6 +2,7 @@ package com.bashirli.playex.presentation.ui.screens.home
 
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ScrollableTabRow
@@ -44,6 +44,8 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bashirli.playex.R
+import com.bashirli.playex.domain.model.AlbumUiModel
+import com.bashirli.playex.domain.model.AudioUiModel
 import com.bashirli.playex.presentation.ui.components.MainAlbumItem
 import com.bashirli.playex.presentation.ui.components.MainAudioItem
 import com.bashirli.playex.presentation.ui.components.MainTextField
@@ -71,47 +73,53 @@ fun HomeScreen(
         mutableStateOf("")
     }
 
+    val audioFiles = remember { mutableStateOf(emptyList<AudioUiModel>()) }
+    val albums = remember { mutableStateOf(emptyList<AlbumUiModel>()) }
+
     val isDataHave = remember { mutableStateOf(false) }
+    val isCalled = remember { mutableStateOf(true) }
 
     val state = viewModel.state.collectAsStateWithLifecycle()
     val effect = viewModel.effect.collectAsStateWithLifecycle(initialValue = null)
-
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val requestPermissionLauncher =
-            rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-                if (isGranted) {
-                    viewModel.setEvent(HomeUiEvent.GetInitialData)
-                } else {
-                    Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_LONG).show()
-                }
-            }
-        LaunchedEffect(key1 = null) {
-            if (ContextCompat.checkSelfPermission(
-                    context, android.Manifest.permission.READ_MEDIA_AUDIO
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
+    val requestPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                isCalled.value = true
                 viewModel.setEvent(HomeUiEvent.GetInitialData)
             } else {
-                requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_AUDIO)
+                Toast.makeText(context, R.string.permission_denied, Toast.LENGTH_LONG).show()
             }
         }
-    } else {
-        viewModel.setEvent(HomeUiEvent.GetInitialData)
+
+    LaunchedEffect(key1 = null) {
+        if (ContextCompat.checkSelfPermission(
+                context, android.Manifest.permission.READ_MEDIA_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            isCalled.value = true
+            viewModel.setEvent(HomeUiEvent.GetInitialData)
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(android.Manifest.permission.READ_MEDIA_AUDIO)
+            } else {
+                requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
     }
 
-    LaunchedEffect(key1 = state) {
+
+    LaunchedEffect(key1 = state.value) {
         if (!state.value.isLoading) {
             when (effect.value) {
                 is HomeUiEffect.ShowMessage -> {
                     val ev = effect.value as HomeUiEffect.ShowMessage
+                    Log.e("testdata", ev.message)
                     Toast.makeText(context, ev.message, Toast.LENGTH_LONG).show()
                 }
 
                 else -> Unit
             }
         }
-
 
         isDataHave.value = state.value.albumNames.isNotEmpty()
     }
@@ -199,7 +207,13 @@ fun HomeScreen(
                     nameList.addAll(0, tagList)
                 }
                 tabs.value = nameList
-
+            } else {
+                val tagList = arrayListOf(
+                    stringResource(id = R.string.featured),
+                    stringResource(id = R.string.all_music)
+                )
+                tabs.value = tagList
+            }
                 ScrollableTabRow(
                     selectedTabIndex = tabIndex.value,
                     modifier = modifier.fillMaxWidth(),
@@ -239,13 +253,24 @@ fun HomeScreen(
                         if (!isSearchVisible.value) {
                             isSearchVisible.value = true
                         }
+                        if (!isCalled.value) {
+                            viewModel.setEvent(HomeUiEvent.GetInitialData)
+                            isCalled.value = !isCalled.value
+                        }
+                        audioFiles.value = state.value.audioFiles
+                        albums.value = state.value.limitedAlbums
                         LazyColumn {
                             item {
                                 Spacer(modifier = modifier.size(24.dp))
                                 LazyRow {
-                                    itemsIndexed(items = state.value.limitedAlbums) { index, item ->
-                                        MainAlbumItem(item = item,
-                                            isLast = state.value.limitedAlbums.size - 1 == index,
+                                    items(
+                                        count = albums.value.size,
+                                        key = {
+                                            albums.value[it].id
+                                        }
+                                    ) {
+                                        MainAlbumItem(item = albums.value[it],
+                                            isLast = state.value.limitedAlbums.size - 1 == it,
                                             onClickShowAll = {
                                                 tabIndex.value = tabs.value.lastIndex
                                             })
@@ -262,19 +287,75 @@ fun HomeScreen(
                                     fontWeight = FontWeight.W600
                                 )
                             }
-                            items(items = state.value.audioFiles) {
+                            items(
+                                count = audioFiles.value.size,
+                                key = {
+                                    audioFiles.value[it].id
+                                },
+                            ) {
                                 MainAudioItem(
-                                    specialModifier = modifier.fillParentMaxWidth(), item = it
+                                    item = audioFiles.value[it],
+                                    specialModifier = modifier.fillParentMaxWidth()
                                 )
+                            }
+
+                        }
+                    }
+
+                    1 -> {
+                        if (isCalled.value) {
+                            isCalled.value = !isCalled.value
+                        }
+
+                        viewModel.setEvent(HomeUiEvent.GetAudios())
+                        audioFiles.value = state.value.audioFiles
+                        if (isSearchVisible.value) isSearchVisible.value = false
+
+                        if (audioFiles.value.isNotEmpty()) {
+                            LazyColumn(
+                                modifier = modifier.fillMaxWidth()
+                            ) {
+                                items(items = audioFiles.value) {
+                                    MainAudioItem(
+                                        item = it,
+                                        specialModifier = modifier.fillParentMaxWidth()
+                                    )
+                                }
+
                             }
                         }
                     }
 
+                    tabs.value.lastIndex -> {}
                     else -> {
+
+                        if (isCalled.value) {
+                            isCalled.value = !isCalled.value
+                        }
                         if (isSearchVisible.value) isSearchVisible.value = false
+                        viewModel.setEvent(
+                            HomeUiEvent.GetAudios(
+                                albumId = state.value.limitedAlbums[tabIndex.value - 2].albumId
+                            )
+                        )
+                        audioFiles.value = state.value.audioFiles
+                        LazyColumn(
+                            modifier = modifier.fillMaxWidth()
+                        ) {
+                            items(
+                                count = audioFiles.value.size,
+                                key = {
+                                    audioFiles.value[it].id
+                                },
+                            ) {
+                                MainAudioItem(
+                                    item = audioFiles.value[it],
+                                    specialModifier = modifier.fillParentMaxWidth()
+                                )
+                            }
+                        }
                     }
                 }
-            }
         }
     }
 }

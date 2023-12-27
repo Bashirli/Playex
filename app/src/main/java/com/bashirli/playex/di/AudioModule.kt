@@ -28,10 +28,10 @@ object AudioModule {
 
     @Provides
     @Singleton
-    fun injectSource(service: AudioService) = AudioSourceImpl(service) as AudioSource
+    fun injectSource() = AudioSourceImpl() as AudioSource
 
     @Provides
     @Singleton
-    fun injectRepo(source: AudioSource) = AudioRepositoryImpl(source) as AudioRepository
+    fun injectRepo(service: AudioService) = AudioRepositoryImpl(service) as AudioRepository
 
 }
