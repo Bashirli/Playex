@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AudioRepository {
 
-    fun getAudioFiles(limit: Int): Flow<Resource<List<AudioUiModel>>>
+    fun getAudioFiles(limit: Int, albumId: Long): Flow<List<AudioUiModel>>
 
     fun getAlbums(limit: Int): Flow<Resource<List<AlbumUiModel>>>
 
