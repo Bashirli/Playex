@@ -1,5 +1,8 @@
 package com.bashirli.playex.domain.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class AudioUiModel(
     val id: Long,
     val title: String,

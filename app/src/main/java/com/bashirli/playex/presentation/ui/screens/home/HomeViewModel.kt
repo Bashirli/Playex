@@ -5,6 +5,7 @@ import com.bashirli.playex.common.base.BaseViewModel
 import com.bashirli.playex.common.base.Effect
 import com.bashirli.playex.common.base.Event
 import com.bashirli.playex.common.base.State
+import com.bashirli.playex.common.util.ellipsisString
 import com.bashirli.playex.domain.model.AlbumUiModel
 import com.bashirli.playex.domain.model.AudioUiModel
 import com.bashirli.playex.domain.useCase.AudioUseCase
@@ -24,114 +25,64 @@ class HomeViewModel @Inject constructor(
 
     override fun handleEvent(event: HomeUiEvent) {
         when (event) {
-            HomeUiEvent.GetAlbums -> Unit //getAlbums()
-            is HomeUiEvent.GetLimitedAlbums -> Unit//getLimitedAlbums(event.limit)
+            HomeUiEvent.GetAlbums -> getAlbums()
+            is HomeUiEvent.GetLimitedAlbums -> getLimitedAlbums(event.limit)
             HomeUiEvent.GetInitialData -> getInitialData()
             is HomeUiEvent.GetAudios -> getAudio(event.limit, event.albumId)
         }
     }
 
     private fun getInitialData() {
-        /*
         viewModelScope.launch {
-            audioUseCase.getAlbums(8).handleResult(
-                onComplete = {
-                    val nameList =
-                        ArrayList(it.map { if (it.album.length > 10) it.album.ellipsisString() else it.album })
-                    setState(
-                        getCurrentState().copy(
-                            isLoading = false,
-                            limitedAlbums = it,
-                            albumNames = nameList
-                        )
+            audioUseCase.getAlbums(8).collectLatest {
+                val nameList =
+                    ArrayList(it.map { if (it.album.length > 10) it.album.ellipsisString() else it.album })
+                setState(
+                    getCurrentState().copy(
+                        isLoading = false,
+                        limitedAlbums = it,
+                        albumNames = nameList
                     )
-                },
-                onError = {
-                    setState(getCurrentState().copy(isLoading = false))
-                    setEffect(HomeUiEffect.ShowMessage(it.localizedMessage as String))
-                },
-                onLoading = {
-                    setState(getCurrentState().copy(isLoading = true))
-                }
-            )
-             }
-         */
-        getAudio(5)
-
+                )
+                getAudio(5)
+            }
+        }
     }
 
-    /*
-        private fun getAlbums() {
-            viewModelScope.launch {
-                audioUseCase.getAlbums().handleResult(
-                    onComplete = {
-                        setState(
-                            getCurrentState().copy(
-                                isLoading = false,
-                                albums = it
-                            )
-                        )
-                    },
-                    onError = {
-                        setState(getCurrentState().copy(isLoading = false))
-                        setEffect(HomeUiEffect.ShowMessage(it.localizedMessage as String))
-                    },
-                    onLoading = {
-                        setState(getCurrentState().copy(isLoading = true))
-                    }
+
+    private fun getAlbums() {
+        viewModelScope.launch {
+            audioUseCase.getAlbums().collectLatest {
+                setState(
+                    getCurrentState().copy(
+                        isLoading = false,
+                        albums = it
+                    )
                 )
             }
         }
+        }
 
 
-
-        private fun getLimitedAlbums(limit: Int = 0) {
-            viewModelScope.launch {
-                audioUseCase.getAlbums(limit).handleResult(
-                    onComplete = {
-                        val nameList =
-                            ArrayList(it.map { if (it.album.length > 10) it.album.ellipsisString() else it.album })
-                        setState(
-                            getCurrentState().copy(
-                                isLoading = false,
-                                limitedAlbums = it,
-                                albumNames = nameList
-                            )
-                        )
-                    },
-                    onError = {
-                        setState(getCurrentState().copy(isLoading = false))
-                        setEffect(HomeUiEffect.ShowMessage(it.localizedMessage as String))
-                    },
-                    onLoading = {
-                        setState(getCurrentState().copy(isLoading = true))
-                    }
+    private fun getLimitedAlbums(limit: Int = 0) {
+        viewModelScope.launch {
+            audioUseCase.getAlbums(limit).collectLatest {
+                val nameList =
+                    ArrayList(it.map { if (it.album.length > 10) it.album.ellipsisString() else it.album })
+                setState(
+                    getCurrentState().copy(
+                        isLoading = false,
+                        limitedAlbums = it,
+                        albumNames = nameList
+                    )
                 )
             }
         }
-     */
+        }
+
     private fun getAudio(limit: Int = 0, albumId: Long = 0) {
         viewModelScope.launch {
-            /*
-            audioUseCase.getAudioFiles(limit,albumId).handleResult(
-                onComplete = {
-                    setState(
-                        getCurrentState().copy(
-                            isLoading = false,
-                            audioFiles = it
-                        )
-                    )
-                },
-                onError = {
-                    setState(getCurrentState().copy(isLoading = false))
-                    setEffect(HomeUiEffect.ShowMessage(it.localizedMessage as String))
-                },
-                onLoading = {
-                    setState(getCurrentState().copy(isLoading = true))
-                }
-            )
-
-             */
+            setState(getCurrentState().copy(isLoading = true, audioFiles = emptyList()))
             audioUseCase.getAudioFiles(limit, albumId).collectLatest {
                 setState(
                     getCurrentState().copy(
