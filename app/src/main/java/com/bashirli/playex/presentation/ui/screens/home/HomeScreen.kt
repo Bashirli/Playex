@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ScrollableTabRow
@@ -48,7 +47,9 @@ import com.bashirli.playex.domain.model.AlbumUiModel
 import com.bashirli.playex.domain.model.AudioUiModel
 import com.bashirli.playex.presentation.ui.components.MainAlbumItem
 import com.bashirli.playex.presentation.ui.components.MainAudioItem
+import com.bashirli.playex.presentation.ui.components.MainEmptyState
 import com.bashirli.playex.presentation.ui.components.MainTextField
+import com.bashirli.playex.presentation.ui.screens.home.components.HomeAlbums
 import com.bashirli.playex.presentation.ui.theme.GradientIndicator
 import com.bashirli.playex.presentation.ui.theme.Pink29
 import com.bashirli.playex.presentation.ui.theme.White99
@@ -76,8 +77,8 @@ fun HomeScreen(
     val audioFiles = remember { mutableStateOf(emptyList<AudioUiModel>()) }
     val albums = remember { mutableStateOf(emptyList<AlbumUiModel>()) }
 
-    val isDataHave = remember { mutableStateOf(false) }
     val isCalled = remember { mutableStateOf(true) }
+    val isTabChanged = remember { mutableStateOf(false) }
 
     val state = viewModel.state.collectAsStateWithLifecycle()
     val effect = viewModel.effect.collectAsStateWithLifecycle(initialValue = null)
@@ -121,9 +122,13 @@ fun HomeScreen(
             }
         }
 
-        isDataHave.value = state.value.albumNames.isNotEmpty()
     }
 
+    val tabNames =
+        listOf(stringResource(id = R.string.featured), stringResource(id = R.string.all_music))
+    if (!tabs.value.containsAll(tabNames)) {
+        tabs.value.addAll(tabNames)
+    }
 
     Surface(modifier = modifier.fillMaxSize()) {
         Column(
@@ -195,29 +200,15 @@ fun HomeScreen(
                 )
             }
 
-            if (isDataHave.value) {
+            if (state.value.albumNames.isNotEmpty()) {
                 val nameList = state.value.albumNames
-
-                val tagList = listOf(
-                    stringResource(id = R.string.featured),
-                    stringResource(id = R.string.all_music)
-                )
-                if (!nameList.containsAll(tagList)) {
-                    nameList.add(stringResource(id = R.string.all_playlists))
-                    nameList.addAll(0, tagList)
+                if (!tabs.value.containsAll(nameList)) {
+                    tabs.value.addAll(nameList)
+                    tabs.value.add(stringResource(id = R.string.all_playlists))
                 }
-                tabs.value = nameList
-            } else {
-                val tagList = arrayListOf(
-                    stringResource(id = R.string.featured),
-                    stringResource(id = R.string.all_music)
-                )
-                tabs.value = tagList
             }
                 ScrollableTabRow(
                     selectedTabIndex = tabIndex.value,
-                    modifier = modifier.fillMaxWidth(),
-                    edgePadding = 0.dp,
                     containerColor = Color.Transparent,
                     indicator = {
                         TabRowDefaults.Indicator(
@@ -234,6 +225,7 @@ fun HomeScreen(
                             selected = index == tabIndex.value,
                             onClick = {
                                 tabIndex.value = index
+                                isTabChanged.value = true
                             },
                             text = {
                                 Text(
@@ -255,104 +247,152 @@ fun HomeScreen(
                         }
                         if (!isCalled.value) {
                             viewModel.setEvent(HomeUiEvent.GetInitialData)
-                            isCalled.value = !isCalled.value
+                            isCalled.value = true
                         }
                         audioFiles.value = state.value.audioFiles
                         albums.value = state.value.limitedAlbums
-                        LazyColumn {
-                            item {
-                                Spacer(modifier = modifier.size(24.dp))
-                                LazyRow {
-                                    items(
-                                        count = albums.value.size,
-                                        key = {
-                                            albums.value[it].id
+
+                        if ((audioFiles.value.isNotEmpty() || albums.value.isNotEmpty()) && !state.value.isLoading) {
+                            LazyColumn {
+                                item {
+                                    Spacer(modifier = modifier.size(24.dp))
+                                    LazyRow {
+                                        items(
+                                            count = albums.value.size,
+                                            key = {
+                                                albums.value[it].id
+                                            }
+                                        ) {
+                                            MainAlbumItem(item = albums.value[it],
+                                                isLast = state.value.limitedAlbums.size - 1 == it,
+                                                onClickShowAll = {
+                                                    tabIndex.value = tabs.value.lastIndex
+                                                    isTabChanged.value = true
+                                                }
+                                            )
                                         }
-                                    ) {
-                                        MainAlbumItem(item = albums.value[it],
-                                            isLast = state.value.limitedAlbums.size - 1 == it,
-                                            onClickShowAll = {
-                                                tabIndex.value = tabs.value.lastIndex
-                                            })
                                     }
+
+                                    Text(
+                                        modifier = modifier
+                                            .padding(horizontal = 24.dp)
+                                            .padding(top = 24.dp, bottom = 16.dp),
+                                        text = stringResource(id = R.string.music_title),
+                                        fontFamily = fontFamily,
+                                        fontSize = 20.sp,
+                                        color = Color.White,
+                                        fontWeight = FontWeight.W600
+                                    )
+
                                 }
-                                Text(
-                                    modifier = modifier
-                                        .padding(horizontal = 24.dp)
-                                        .padding(top = 24.dp, bottom = 16.dp),
-                                    text = stringResource(id = R.string.music_title),
-                                    fontFamily = fontFamily,
-                                    fontSize = 20.sp,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.W600
-                                )
-                            }
-                            items(
-                                count = audioFiles.value.size,
-                                key = {
-                                    audioFiles.value[it].id
-                                },
-                            ) {
-                                MainAudioItem(
-                                    item = audioFiles.value[it],
-                                    specialModifier = modifier.fillParentMaxWidth()
-                                )
-                            }
-
-                        }
-                    }
-
-                    1 -> {
-                        if (isCalled.value) {
-                            isCalled.value = !isCalled.value
-                        }
-
-                        viewModel.setEvent(HomeUiEvent.GetAudios())
-                        audioFiles.value = state.value.audioFiles
-                        if (isSearchVisible.value) isSearchVisible.value = false
-
-                        if (audioFiles.value.isNotEmpty()) {
-                            LazyColumn(
-                                modifier = modifier.fillMaxWidth()
-                            ) {
-                                items(items = audioFiles.value) {
+                                items(
+                                    count = audioFiles.value.size,
+                                    key = {
+                                        audioFiles.value[it].id
+                                    },
+                                ) {
                                     MainAudioItem(
-                                        item = it,
+                                        item = audioFiles.value[it],
                                         specialModifier = modifier.fillParentMaxWidth()
                                     )
                                 }
 
                             }
+                        } else if (!state.value.isLoading) {
+                            MainEmptyState(message = R.string.empty_state)
                         }
                     }
-
-                    tabs.value.lastIndex -> {}
-                    else -> {
-
+                    1 -> {
                         if (isCalled.value) {
                             isCalled.value = !isCalled.value
                         }
+
+                        if (isTabChanged.value) {
+                            isTabChanged.value = false
+                            viewModel.setEvent(HomeUiEvent.GetAudios())
+                        }
+
+                        audioFiles.value = state.value.audioFiles
+                        if (isSearchVisible.value) isSearchVisible.value = false
+
+                        if (audioFiles.value.isNotEmpty()) {
+                            LazyColumn {
+                                items(
+                                    count = audioFiles.value.size,
+                                    key = {
+                                        audioFiles.value[it].id
+                                    }
+                                ) {
+                                    MainAudioItem(
+                                        item = audioFiles.value[it],
+                                        specialModifier = modifier.fillParentMaxWidth()
+                                    )
+                                }
+                            }
+                        } else {
+                            MainEmptyState(message = R.string.empty_state)
+                        }
+                    }
+
+                    tabs.value.lastIndex -> {
+                        if (isCalled.value) {
+                            isCalled.value = !isCalled.value
+                        }
+                        if (isTabChanged.value) {
+                            isTabChanged.value = false
+                            viewModel.setEvent(HomeUiEvent.GetAlbums)
+                        }
+
+                        albums.value = state.value.albums
+
+                        if (albums.value.isNotEmpty() && !state.value.isLoading) {
+                            LazyColumn {
+                                items(
+                                    count = albums.value.size,
+                                    key = {
+                                        albums.value[it].id
+                                    }
+                                ) {
+                                    HomeAlbums(
+                                        sModifier = modifier.fillParentMaxWidth(),
+                                        item = albums.value[it]
+                                    )
+                                }
+                            }
+                        } else if (!state.value.isLoading) {
+                            MainEmptyState(message = R.string.empty_state)
+                        }
+
+                    }
+
+                    else -> {
+                        if (isCalled.value) isCalled.value = !isCalled.value
                         if (isSearchVisible.value) isSearchVisible.value = false
                         viewModel.setEvent(
                             HomeUiEvent.GetAudios(
-                                albumId = state.value.limitedAlbums[tabIndex.value - 2].albumId
+                                albumId = albums.value[tabIndex.value - 2].albumId
                             )
                         )
+
                         audioFiles.value = state.value.audioFiles
-                        LazyColumn(
-                            modifier = modifier.fillMaxWidth()
-                        ) {
-                            items(
-                                count = audioFiles.value.size,
-                                key = {
-                                    audioFiles.value[it].id
-                                },
+                        if (audioFiles.value.isNotEmpty()) {
+                            LazyColumn(
+                                modifier = modifier.fillMaxWidth()
                             ) {
-                                MainAudioItem(
-                                    item = audioFiles.value[it],
-                                    specialModifier = modifier.fillParentMaxWidth()
-                                )
+                                items(
+                                    count = audioFiles.value.size,
+                                    key = {
+                                        audioFiles.value[it].id
+                                    },
+                                ) {
+                                    MainAudioItem(
+                                        item = audioFiles.value[it],
+                                        specialModifier = modifier.fillParentMaxWidth()
+                                    )
+                                }
                             }
+                        } else {
+                            MainEmptyState(message = R.string.empty_state)
                         }
                     }
                 }

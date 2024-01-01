@@ -14,5 +14,7 @@
     <string name="all_music">All Music</string>
     <string name="all_playlists">All playlists</string>
     <string name="show_all_playlists">Show all playlists</string>
+    <string name="by">By</string>
+    <string name="empty_state">Nothing to show :(\n<br /> Choose different taste of music.</string>
 
 </resources>
