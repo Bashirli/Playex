@@ -27,6 +27,7 @@ import coil.compose.AsyncImage
 import com.bashirli.playex.R
 import com.bashirli.playex.common.util.ellipsis25String
 import com.bashirli.playex.domain.model.AlbumUiModel
+import com.bashirli.playex.presentation.navigation.graph.HomeScreenObject
 import com.bashirli.playex.presentation.ui.theme.Pink63
 import com.bashirli.playex.presentation.ui.theme.White99
 import com.bashirli.playex.presentation.ui.theme.fontFamily
@@ -36,6 +37,7 @@ fun MainAlbumItem(
     modifier: Modifier = Modifier,
     item: AlbumUiModel,
     isLast: Boolean,
+    onNavigate: (String) -> Unit,
     onClickShowAll: () -> Unit,
 ) {
 
@@ -46,7 +48,7 @@ fun MainAlbumItem(
             modifier = modifier
                 .padding(horizontal = 24.dp)
                 .clickable {
-
+                    onNavigate(HomeScreenObject.AlbumDetails.route)
                 },
         ) {
             Card(

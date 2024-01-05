@@ -2,7 +2,6 @@ package com.bashirli.playex.presentation.ui.screens.home
 
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -114,7 +113,6 @@ fun HomeScreen(
             when (effect.value) {
                 is HomeUiEffect.ShowMessage -> {
                     val ev = effect.value as HomeUiEffect.ShowMessage
-                    Log.e("testdata", ev.message)
                     Toast.makeText(context, ev.message, Toast.LENGTH_LONG).show()
                 }
 
@@ -262,9 +260,12 @@ fun HomeScreen(
                                             key = {
                                                 albums.value[it].id
                                             }
-                                        ) {
-                                            MainAlbumItem(item = albums.value[it],
-                                                isLast = state.value.limitedAlbums.size - 1 == it,
+                                        ) { index ->
+                                            MainAlbumItem(item = albums.value[index],
+                                                isLast = state.value.limitedAlbums.size - 1 == index,
+                                                onNavigate = {
+                                                    onNavigate(it + "?${albums.value[index].albumId}")
+                                                },
                                                 onClickShowAll = {
                                                     tabIndex.value = tabs.value.lastIndex
                                                     isTabChanged.value = true
@@ -352,10 +353,13 @@ fun HomeScreen(
                                     key = {
                                         albums.value[it].id
                                     }
-                                ) {
+                                ) { index ->
                                     HomeAlbums(
                                         sModifier = modifier.fillParentMaxWidth(),
-                                        item = albums.value[it]
+                                        item = albums.value[index],
+                                        onNavigate = {
+                                            onNavigate(it + "?${albums.value[index].albumId}")
+                                        }
                                     )
                                 }
                             }

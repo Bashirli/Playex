@@ -19,6 +19,12 @@ val BlueED = Color(0xFF0038ED)
 
 val White99 = Color(0x99FFFFFF)
 
+
+val GradientBackground = Brush.linearGradient(
+    0.0f to BlueED,
+    1.0f to PinkFE
+)
+
 val GradientIndicator = Brush.horizontalGradient(
     0.0f to PinkFE,
     0.5f to PinkFE,

@@ -9,5 +9,6 @@ class AudioUseCase @Inject constructor(private val repo: AudioRepository) {
 
     fun getAudioFiles(limit: Int = 0, albumId: Long = 0L) = repo.getAudioFiles(limit, albumId)
 
+    fun getSingleAlbum(albumId: Long) = repo.getSingleAlbum(albumId)
 
 }
