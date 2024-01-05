@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -40,6 +41,7 @@ fun MainScreen(navHostController: NavHostController = rememberNavController()) {
 fun BottomBar(navHostController: NavHostController) {
     val screens = listOf(
         BottomScreen.HomeScreen,
+        BottomScreen.SearchScreen,
         BottomScreen.ProfileScreen
     )
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
@@ -97,6 +99,12 @@ sealed class BottomScreen(
 
     data object HomeScreen :
         BottomScreen(route = "home", name = R.string.home_screen, icon = Icons.Default.Home)
+
+    data object SearchScreen : BottomScreen(
+        route = "search",
+        R.string.search_screen,
+        icon = Icons.Default.Search
+    )
 
     data object ProfileScreen : BottomScreen(
         route = "profile",

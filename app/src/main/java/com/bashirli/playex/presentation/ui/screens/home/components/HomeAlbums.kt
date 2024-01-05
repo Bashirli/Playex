@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bashirli.playex.R
 import com.bashirli.playex.domain.model.AlbumUiModel
+import com.bashirli.playex.presentation.navigation.graph.HomeScreenObject
 import com.bashirli.playex.presentation.ui.theme.White99
 import com.bashirli.playex.presentation.ui.theme.fontFamily
 
@@ -38,6 +39,7 @@ import com.bashirli.playex.presentation.ui.theme.fontFamily
 fun HomeAlbums(
     sModifier: Modifier = Modifier,
     modifier: Modifier = Modifier,
+    onNavigate: (String) -> Unit,
     item: AlbumUiModel,
 ) {
 
@@ -57,7 +59,7 @@ fun HomeAlbums(
                 indication = rememberRipple(bounded = true),
                 interactionSource = interactionSource
             ) {
-
+                onNavigate(HomeScreenObject.AlbumDetails.route)
             },
         shape = RoundedCornerShape(
             animateDpAsState(

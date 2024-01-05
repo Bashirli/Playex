@@ -142,7 +142,56 @@ class AudioService @Inject constructor(
                 }
                 cursor?.close()
             }
-    }
+        }
 
+    fun getSingleAlbum(albumId: Long) =
+        contentResolver.observe(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI).map {
+            buildMap {
+
+                val selection = "album_id = $albumId"
+
+                val projection = arrayOf(
+                    MediaStore.Audio.Albums._ID,
+                    MediaStore.Audio.Albums.ALBUM_ID,
+                    MediaStore.Audio.Albums.NUMBER_OF_SONGS,
+                    MediaStore.Audio.Albums.ALBUM,
+                    MediaStore.Audio.Albums.ARTIST
+                )
+                val cursor = contentResolver.query(
+                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    projection,
+                    selection,
+                    null,
+                    MediaStore.Audio.Media.ALBUM + " DESC",
+                    null
+                )
+                cursor?.let {
+                    if (it.moveToFirst()) {
+                        val id =
+                            it.getLongOrNull(it.getColumnIndex(MediaStore.Audio.Albums._ID))
+                        val album =
+                            it.getStringOrNull(it.getColumnIndex(MediaStore.Audio.Albums.ALBUM))
+                        val album_id =
+                            it.getLongOrNull(it.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ID))
+                        val artist =
+                            it.getStringOrNull(it.getColumnIndex(MediaStore.Audio.Albums.ARTIST))
+                        val numberOfSongs =
+                            it.getLongOrNull(it.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS))
+                        val image =
+                            Uri.withAppendedPath(
+                                Uri.parse(Constants.CONTENT_URI),
+                                album_id.toString()
+                            )
+                                .toString()
+
+                        val albumData = AlbumDTO(
+                            id, album_id, album, artist, numberOfSongs, image
+                        )
+                        put(0, albumData)
+                    }
+                }
+                cursor?.close()
+            }
+        }
 
 }

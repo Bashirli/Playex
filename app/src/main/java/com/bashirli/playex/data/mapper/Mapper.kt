@@ -34,3 +34,25 @@ fun List<AudioDTO>.toAudioUiModel() = map {
         )
     }
 }
+
+fun AudioDTO.toAudioModel() = AudioUiModel(
+    id = id ?: 0L,
+    albumId = albumId ?: 0L,
+    album = album.orEmpty(),
+    artist = artist.orEmpty(),
+    title = title.orEmpty(),
+    artistId = artistId ?: 0L,
+    duration = duration ?: 0L,
+    path = path.orEmpty(),
+    dateAdded = dateAdded.orEmpty(),
+    image = image.orEmpty()
+)
+
+fun AlbumDTO.toAlbumModel() = AlbumUiModel(
+    id = id ?: 0L,
+    albumId = albumId ?: 0L,
+    album = album.orEmpty(),
+    artist = artist.orEmpty(),
+    numberOfSongs = numberOfSongs ?: 0L,
+    image = image.orEmpty()
+)
