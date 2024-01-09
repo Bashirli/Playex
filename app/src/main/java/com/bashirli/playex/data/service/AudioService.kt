@@ -194,11 +194,11 @@ class AudioService @Inject constructor(
             }
         }
 
-    fun getSingleAudio(id: Long) =
+    fun getSingleAudio(_id: Long) =
         contentResolver.observe(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI).map {
             buildMap {
                 val selection =
-                    MediaStore.Audio.Media.IS_MUSIC + "!=0 and ${MediaStore.Audio.Media._ID}=$id"
+                    MediaStore.Audio.Media.IS_MUSIC + "!=0 and ${MediaStore.Audio.Media._ID}=$_id"
                 val projection = arrayOf(
                     MediaStore.Audio.Media._ID,
                     MediaStore.Audio.Media.TITLE,
