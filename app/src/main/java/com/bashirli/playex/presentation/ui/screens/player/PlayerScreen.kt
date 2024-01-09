@@ -321,7 +321,9 @@ fun PlayerScreen(
                 ) {
                     IconButton(
                         modifier = modifier.size(60.dp),
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+
+                        }) {
                         Icon(
                             modifier = modifier.size(40.dp),
                             painter = painterResource(id = R.drawable.skip_back_icon),
@@ -351,7 +353,9 @@ fun PlayerScreen(
                         )
                     }
                     IconButton(modifier = modifier.size(60.dp),
-                        onClick = { /*TODO*/ }) {
+                        onClick = {
+
+                        }) {
                         Icon(
                             modifier = modifier.size(40.dp),
                             painter = painterResource(id = R.drawable.skip_next_icon),
