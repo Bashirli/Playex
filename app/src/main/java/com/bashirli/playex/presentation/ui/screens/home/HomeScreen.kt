@@ -294,6 +294,9 @@ fun HomeScreen(
                                 ) {
                                     MainAudioItem(
                                         item = audioFiles.value[it],
+                                        onClick = { route ->
+                                            onNavigate(route + "?${audioFiles.value[it].id}")
+                                        },
                                         specialModifier = modifier.fillParentMaxWidth()
                                     )
                                 }
@@ -326,6 +329,9 @@ fun HomeScreen(
                                 ) {
                                     MainAudioItem(
                                         item = audioFiles.value[it],
+                                        onClick = { route ->
+                                            onNavigate(route + "?${audioFiles.value[it].id}")
+                                        },
                                         specialModifier = modifier.fillParentMaxWidth()
                                     )
                                 }
@@ -391,6 +397,9 @@ fun HomeScreen(
                                 ) {
                                     MainAudioItem(
                                         item = audioFiles.value[it],
+                                        onClick = { route ->
+                                            onNavigate(route + "?${audioFiles.value[it].id}")
+                                        },
                                         specialModifier = modifier.fillParentMaxWidth()
                                     )
                                 }

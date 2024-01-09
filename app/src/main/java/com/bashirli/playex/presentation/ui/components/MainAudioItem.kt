@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bashirli.playex.common.util.convertLongToTime
 import com.bashirli.playex.domain.model.AudioUiModel
+import com.bashirli.playex.presentation.navigation.graph.HomeScreenObject
 import com.bashirli.playex.presentation.ui.theme.White99
 import com.bashirli.playex.presentation.ui.theme.fontFamily
 
@@ -31,12 +32,13 @@ fun MainAudioItem(
     modifier: Modifier = Modifier,
     specialModifier: Modifier = Modifier,
     item: AudioUiModel,
+    onClick: (String) -> Unit,
 ) {
 
     Row(
         modifier = specialModifier
             .clickable {
-
+                onClick(HomeScreenObject.PlayerScreen.route)
             }
             .padding(horizontal = 24.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,

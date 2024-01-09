@@ -41,6 +41,7 @@ import coil.compose.AsyncImage
 import com.bashirli.playex.R
 import com.bashirli.playex.domain.model.AlbumUiModel
 import com.bashirli.playex.domain.model.AudioUiModel
+import com.bashirli.playex.presentation.ui.components.BackButton
 import com.bashirli.playex.presentation.ui.components.MainEmptyState
 import com.bashirli.playex.presentation.ui.screens.albumDetails.components.AlbumDetailsAudioItem
 import com.bashirli.playex.presentation.ui.theme.GradientBackground
@@ -93,17 +94,10 @@ fun AlbumDetailsScreen(
             Spacer(modifier = modifier.fillMaxSize(0.04f))
 
             Box(modifier = modifier.fillMaxWidth()) {
-
-                IconButton(
-                    modifier = modifier.padding(start = 24.dp),
-                    onClick = {
-                        onBack()
-                    }) {
-                    Image(
-                        painter = painterResource(id = R.drawable.arrow_left),
-                        contentDescription = ""
-                    )
-
+                BackButton(
+                    modifier = modifier.padding(start = 24.dp)
+                ) {
+                    onBack()
                 }
 
                 state.value.albumItem?.let { item ->

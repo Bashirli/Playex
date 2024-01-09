@@ -1,6 +1,5 @@
 package com.bashirli.playex.presentation.navigation.graph
 
-import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -14,6 +13,7 @@ import com.bashirli.playex.presentation.navigation.Graph
 import com.bashirli.playex.presentation.ui.screens.albumDetails.AlbumDetailsScreen
 import com.bashirli.playex.presentation.ui.screens.home.HomeScreen
 import com.bashirli.playex.presentation.ui.screens.main.BottomScreen
+import com.bashirli.playex.presentation.ui.screens.player.PlayerScreen
 
 
 @Composable
@@ -36,7 +36,6 @@ fun HomeNavGraph(navHostController: NavHostController, innerPadding: PaddingValu
             arguments = listOf(navArgument("albumId") { type = NavType.LongType })
         ) {
             val albumId = it.arguments?.getLong("albumId") ?: 0
-            Log.e("albumId", albumId.toString())
             AlbumDetailsScreen(
                 albumId = albumId,
                 onBack = {
@@ -46,6 +45,14 @@ fun HomeNavGraph(navHostController: NavHostController, innerPadding: PaddingValu
                     navHostController.navigate(it)
                 }
             )
+        }
+
+        composable(
+            route = HomeScreenObject.PlayerScreen.route + "?{audioId}",
+            arguments = listOf(navArgument("audioId") { type = NavType.LongType })
+        ) {
+            val audioId = it.arguments?.getLong("audioId") ?: 0
+            PlayerScreen(audioId = audioId, onBack = { navHostController.popBackStack() })
         }
 
         composable(route = BottomScreen.ProfileScreen.route) {
@@ -66,6 +73,8 @@ sealed class HomeScreenObject(
 ) {
 
     data object AlbumDetails : HomeScreenObject("album_details")
+
+    data object PlayerScreen : HomeScreenObject("player_screen")
 
 }
 

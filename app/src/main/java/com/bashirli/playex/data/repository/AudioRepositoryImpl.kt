@@ -1,8 +1,8 @@
 package com.bashirli.playex.data.repository
 
-import android.util.Log
 import com.bashirli.playex.data.mapper.toAlbumModel
 import com.bashirli.playex.data.mapper.toAlbumUiModel
+import com.bashirli.playex.data.mapper.toAudioModel
 import com.bashirli.playex.data.mapper.toAudioUiModel
 import com.bashirli.playex.data.service.AudioService
 import com.bashirli.playex.domain.model.AlbumUiModel
@@ -19,7 +19,6 @@ class AudioRepositoryImpl @Inject constructor(
         service.getAudioFiles(limit, albumId)
             .collect {
                 val data = it.toAudioUiModel()
-                Log.e("test", "col")
                 emit(data)
             }
     }
@@ -36,6 +35,14 @@ class AudioRepositoryImpl @Inject constructor(
         service.getSingleAlbum(albumId).collect {
             it[0]?.let { item ->
                 emit(item.toAlbumModel())
+            }
+        }
+    }
+
+    override fun getSingleAudio(id: Long): Flow<AudioUiModel> = flow {
+        service.getSingleAudio(id).collect {
+            it[0]?.let { item ->
+                emit(item.toAudioModel())
             }
         }
     }

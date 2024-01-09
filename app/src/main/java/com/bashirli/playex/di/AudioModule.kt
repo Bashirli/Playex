@@ -2,6 +2,7 @@ package com.bashirli.playex.di
 
 import android.content.ContentResolver
 import android.content.Context
+import android.media.MediaPlayer
 import com.bashirli.playex.data.repository.AudioRepositoryImpl
 import com.bashirli.playex.data.service.AudioService
 import com.bashirli.playex.data.source.AudioSource
@@ -17,6 +18,10 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 object AudioModule {
+
+    @Provides
+    @Singleton
+    fun injectMediaPlayer() = MediaPlayer()
 
     @Provides
     @Singleton
