@@ -25,6 +25,7 @@ val GradientBackground = Brush.linearGradient(
     1.0f to PinkFE
 )
 
+
 val GradientIndicator = Brush.horizontalGradient(
     0.0f to PinkFE,
     0.5f to PinkFE,

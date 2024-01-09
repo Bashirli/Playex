@@ -12,5 +12,7 @@ interface AudioRepository {
 
     fun getSingleAlbum(albumId: Long): Flow<AlbumUiModel>
 
+    fun getSingleAudio(id: Long): Flow<AudioUiModel>
+
 
 }

@@ -17,5 +17,6 @@
     <string name="show_all_playlists">Show all playlists</string>
     <string name="by">By</string>
     <string name="empty_state">Nothing to show :(\n<br /> Choose different taste of music.</string>
+    <string name="player_title">Playing from the album</string>
 
 </resources>

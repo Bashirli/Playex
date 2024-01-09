@@ -25,7 +25,7 @@ class AudioService @Inject constructor(
                 selection += if (albumId != 0L) {
                     " and album_id = $albumId"
                 } else {
-                    " AND duration>30000 AND ${MediaStore.Audio.Media.DATA} NOT LIKE ?"
+                    " AND duration>10000 AND ${MediaStore.Audio.Media.DATA} NOT LIKE ?"
                 }
                 val projection = arrayOf(
                     MediaStore.Audio.Media._ID,
@@ -192,6 +192,77 @@ class AudioService @Inject constructor(
                 }
                 cursor?.close()
             }
+        }
+
+    fun getSingleAudio(id: Long) =
+        contentResolver.observe(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI).map {
+            buildMap {
+                val selection =
+                    MediaStore.Audio.Media.IS_MUSIC + "!=0 and ${MediaStore.Audio.Media._ID}=$id"
+                val projection = arrayOf(
+                    MediaStore.Audio.Media._ID,
+                    MediaStore.Audio.Media.TITLE,
+                    MediaStore.Audio.Media.ALBUM,
+                    MediaStore.Audio.Media.DURATION,
+                    MediaStore.Audio.Media.DATA,
+                    MediaStore.Audio.Media.ARTIST,
+                    MediaStore.Audio.Media.DATE_ADDED,
+                    MediaStore.Audio.Media.ARTIST_ID,
+                    MediaStore.Audio.Media.ALBUM_ID,
+                )
+                val cursor = contentResolver.query(
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                    projection,
+                    selection,
+                    null,
+                    MediaStore.Audio.Media.DATE_ADDED + " DESC",
+                    null
+                )
+                cursor?.let {
+                    if (it.moveToFirst()) {
+                        val title =
+                            it.getString(it.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE))
+                        val id =
+                            it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Media._ID))
+                        val album =
+                            it.getString(it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM))
+                        val path =
+                            it.getString(it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
+                        val artist =
+                            it.getString(it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
+                        val duration =
+                            it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
+                        val artistId =
+                            it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST_ID))
+                        val _albumId =
+                            it.getLong(it.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID))
+                        val image =
+                            Uri.withAppendedPath(
+                                Uri.parse(Constants.CONTENT_URI),
+                                _albumId.toString()
+                            )
+                                .toString()
+                        val dateAdded =
+                            it.getString(it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED))
+
+                        val audio = AudioDTO(
+                            id,
+                            title,
+                            album,
+                            _albumId,
+                            artist,
+                            artistId,
+                            duration,
+                            path,
+                            dateAdded,
+                            image
+                        )
+                        put(0, audio)
+                    }
+                }
+                cursor?.close()
+            }
+
         }
 
 }
