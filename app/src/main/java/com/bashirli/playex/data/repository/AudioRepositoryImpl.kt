@@ -47,5 +47,12 @@ class AudioRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun searchAudio(query: String): Flow<List<AudioUiModel>> = flow {
+        service.searchAudio(query).collect {
+            val data = it.toAudioUiModel()
+            emit(data)
+        }
+    }
+
 
 }
