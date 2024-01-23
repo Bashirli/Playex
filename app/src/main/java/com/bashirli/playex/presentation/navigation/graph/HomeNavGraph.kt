@@ -14,6 +14,7 @@ import com.bashirli.playex.presentation.ui.screens.albumDetails.AlbumDetailsScre
 import com.bashirli.playex.presentation.ui.screens.home.HomeScreen
 import com.bashirli.playex.presentation.ui.screens.main.BottomScreen
 import com.bashirli.playex.presentation.ui.screens.player.PlayerScreen
+import com.bashirli.playex.presentation.ui.screens.search.SearchScreen
 
 
 @Composable
@@ -21,7 +22,7 @@ fun HomeNavGraph(navHostController: NavHostController, innerPadding: PaddingValu
     NavHost(
         navController = navHostController,
         route = Graph.HOME,
-        startDestination = BottomScreen.HomeScreen.route,
+        startDestination = BottomScreen.SearchScreen.route,
         modifier = Modifier.padding(innerPadding)
     ) {
 
@@ -60,7 +61,9 @@ fun HomeNavGraph(navHostController: NavHostController, innerPadding: PaddingValu
         }
 
         composable(route = BottomScreen.SearchScreen.route) {
-
+            SearchScreen(onNavigate = {
+                navHostController.navigate(it)
+            })
         }
 
 

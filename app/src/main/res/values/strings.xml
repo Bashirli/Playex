@@ -18,5 +18,9 @@
     <string name="by">By</string>
     <string name="empty_state">Nothing to show :(\n<br /> Choose different taste of music.</string>
     <string name="player_title">Playing from the album</string>
+    <string name="search_screen_title">What do you want to listen to?</string>
+    <string name="fav_album">Trending albums</string>
+    <string name="feel_this_moment">Feel this moment :)</string>
+    <string name="did_you_like_it">Did you like it?</string>
 
 </resources>

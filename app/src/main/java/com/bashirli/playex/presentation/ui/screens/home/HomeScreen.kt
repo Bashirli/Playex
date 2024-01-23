@@ -49,6 +49,7 @@ import com.bashirli.playex.presentation.ui.components.MainAudioItem
 import com.bashirli.playex.presentation.ui.components.MainEmptyState
 import com.bashirli.playex.presentation.ui.components.MainTextField
 import com.bashirli.playex.presentation.ui.screens.home.components.HomeAlbums
+import com.bashirli.playex.presentation.ui.screens.main.BottomScreen
 import com.bashirli.playex.presentation.ui.theme.GradientIndicator
 import com.bashirli.playex.presentation.ui.theme.Pink29
 import com.bashirli.playex.presentation.ui.theme.White99
@@ -189,7 +190,7 @@ fun HomeScreen(
                         .padding(horizontal = 24.dp)
                         .padding(bottom = 16.dp)
                         .clickable {
-
+                            onNavigate(BottomScreen.SearchScreen.route)
                         },
                     text = searchState,
                     label = R.string.search_title,

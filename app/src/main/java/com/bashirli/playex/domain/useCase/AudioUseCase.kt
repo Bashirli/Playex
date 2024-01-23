@@ -13,4 +13,6 @@ class AudioUseCase @Inject constructor(private val repo: AudioRepository) {
 
     fun getSingleAudio(id: Long) = repo.getSingleAudio(id)
 
+    fun searchAudio(query: String) = repo.searchAudio(query)
+
 }

@@ -14,5 +14,7 @@ interface AudioRepository {
 
     fun getSingleAudio(id: Long): Flow<AudioUiModel>
 
+    fun searchAudio(query: String): Flow<List<AudioUiModel>>
+
 
 }
