@@ -22,7 +22,7 @@ fun HomeNavGraph(navHostController: NavHostController, innerPadding: PaddingValu
     NavHost(
         navController = navHostController,
         route = Graph.HOME,
-        startDestination = BottomScreen.SearchScreen.route,
+        startDestination = BottomScreen.HomeScreen.route,
         modifier = Modifier.padding(innerPadding)
     ) {
 

@@ -1,6 +1,5 @@
 package com.bashirli.playex.presentation.ui.screens.search
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -125,7 +124,6 @@ fun SearchScreen(
             shortAudioList.value = state.value.initialAudio
             albumList.value = state.value.albumList
 
-            Log.e("test", albumList.value.size.toString())
 
             if (searchText.value.isEmpty()) {
                 LazyColumn {
@@ -142,36 +140,42 @@ fun SearchScreen(
                         )
                         Spacer(modifier = modifier.size(16.dp))
 
-                        LazyRow {
-                            items(
-                                count = albumList.value.size,
-                                key = {
-                                    albumList.value[it].id
-                                }
-                            ) { position ->
-                                MainAlbumItem(
-                                    onNavigate = {
-                                        onNavigate(it + "?${albumList.value[position].albumId}")
-                                    },
-                                    onClickShowAll = {
+                        if (albumList.value.isEmpty()) {
+                            MainEmptyState(message = R.string.empty_state)
+                        } else {
+                            LazyRow {
+                                items(
+                                    count = albumList.value.size,
+                                    key = {
+                                        albumList.value[it].id
+                                    }
+                                ) { position ->
+                                    MainAlbumItem(
+                                        onNavigate = {
+                                            onNavigate(it + "?${albumList.value[position].albumId}")
+                                        },
+                                        onClickShowAll = {
 
-                                    },
-                                    isLast = albumList.value.size - 1 == position,
-                                    item = albumList.value[position]
-                                )
+                                        },
+                                        isLast = albumList.value.size - 1 == position,
+                                        item = albumList.value[position]
+                                    )
+                                }
                             }
                         }
 
-                        Text(
-                            modifier = modifier
-                                .padding(horizontal = 24.dp)
-                                .padding(top = 16.dp),
-                            text = stringResource(id = R.string.did_you_like_it),
-                            fontSize = 24.sp,
-                            fontFamily = fontFamily,
-                            fontWeight = FontWeight.W600,
-                            color = Color.White
-                        )
+                        if (shortAudioList.value.isNotEmpty()) {
+                            Text(
+                                modifier = modifier
+                                    .padding(horizontal = 24.dp)
+                                    .padding(top = 16.dp),
+                                text = stringResource(id = R.string.did_you_like_it),
+                                fontSize = 24.sp,
+                                fontFamily = fontFamily,
+                                fontWeight = FontWeight.W600,
+                                color = Color.White
+                            )
+                        }
                     }
                     items(
                         count = shortAudioList.value.size,
