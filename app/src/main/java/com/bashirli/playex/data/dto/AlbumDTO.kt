@@ -6,5 +6,5 @@ data class AlbumDTO(
     val album: String?,
     val artist: String?,
     val numberOfSongs: Long?,
-    val image: String?
+    val image: String?,
 )
